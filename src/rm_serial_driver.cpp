@@ -108,7 +108,7 @@ void RMSerialDriver::receiveData()
         ReceivePacket packet = fromVector(data);
 
         bool crc_ok =
-          crc16::Verify_CRC16_Check_Sum(reinterpret_cast<const uint8_t *>(&packet), sizeof(packet));
+          crc16::Verify_CRC16_Check_Sum(reinterpret_cast<const uint8_t *>(&packet), 28U/*sizeof(packet)*/);
         if (crc_ok) {
           if (!initial_set_param_ || packet.detect_color != previous_receive_color_) {
             setParam(rclcpp::Parameter("detect_color", packet.detect_color));
@@ -172,7 +172,7 @@ void RMSerialDriver::sendData(const auto_aim_interfaces::msg::Target::SharedPtr 
     packet.r1 = msg->radius_1;
     packet.r2 = msg->radius_2;
     packet.dz = msg->dz;
-    crc16::Append_CRC16_Check_Sum(reinterpret_cast<uint8_t *>(&packet), sizeof(packet));
+    crc16::Append_CRC16_Check_Sum(reinterpret_cast<uint8_t *>(&packet), 48U/*sizeof(packet)*/);
 
     std::vector<uint8_t> data = toVector(packet);
 

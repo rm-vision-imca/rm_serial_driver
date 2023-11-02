@@ -23,7 +23,7 @@ struct ReceivePacket
   float aim_y;
   float aim_z;
   uint16_t checksum = 0;
-} __attribute__((packed));
+};// __attribute__((packed));
 
 struct SendPacket
 {
@@ -44,7 +44,7 @@ struct SendPacket
   float r2;
   float dz;
   uint16_t checksum = 0;
-} __attribute__((packed));
+};// __attribute__((packed));
 
 inline ReceivePacket fromVector(const std::vector<uint8_t> & data)
 {
