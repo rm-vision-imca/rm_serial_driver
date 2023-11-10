@@ -110,11 +110,9 @@ void RMSerialDriver::receiveData()
         bool crc_ok =
           crc16::Verify_CRC16_Check_Sum(reinterpret_cast<const uint8_t *>(&packet), 32U/*sizeof(packet)*/);
         if (crc_ok) {
-
           if (!initial_set_param_ || packet.detect_color != previous_receive_color_) {
             setParam(rclcpp::Parameter("detect_color", packet.detect_color));
             previous_receive_color_ = packet.detect_color;
-            std::cout<<"color"<<packet.detect_color<<std::endl;
           }
 
           if (packet.reset_tracker) {
@@ -127,24 +125,15 @@ void RMSerialDriver::receiveData()
           t.header.frame_id = "odom";
           t.child_frame_id = "gimbal_link";
           tf2::Quaternion q;
-          q.setRPY(packet.roll, -packet.pitch, packet.yaw);
+          q.setRPY(packet.roll, packet.pitch, packet.yaw);
           t.transform.rotation = tf2::toMsg(q);
           tf_broadcaster_->sendTransform(t);
-
-          std::cout<<"roll"<<packet.roll<<std::endl;
-          std::cout<<"pitch"<<packet.pitch<<std::endl;
-          std::cout<<"yaw"<<packet.yaw<<std::endl;
-
 
           if (abs(packet.aim_x) > 0.01) {
             aiming_point_.header.stamp = this->now();
             aiming_point_.pose.position.x = packet.aim_x;
             aiming_point_.pose.position.y = packet.aim_y;
             aiming_point_.pose.position.z = packet.aim_z;
-            std::cout<<"aimx"<<packet.aim_x<<std::endl;
-            std::cout<<"aimy"<<packet.aim_y<<std::endl;
-            std::cout<<"aimz"<<packet.aim_z<<std::endl;
-            
             marker_pub_->publish(aiming_point_);
           }
         } else {
@@ -183,7 +172,7 @@ void RMSerialDriver::sendData(const auto_aim_interfaces::msg::Target::SharedPtr 
     packet.r1 = msg->radius_1;
     packet.r2 = msg->radius_2;
     packet.dz = msg->dz;
-    crc16::Append_CRC16_Check_Sum(reinterpret_cast<uint8_t *>(&packet), 52U/*sizeof(packet)*/);
+    crc16::Append_CRC16_Check_Sum(reinterpret_cast<uint8_t *>(&packet), 52U);
 
     std::vector<uint8_t> data = toVector(packet);
 
