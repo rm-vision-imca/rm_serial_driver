@@ -22,6 +22,7 @@ struct ReceivePacket
   float aim_x;
   float aim_y;
   float aim_z;
+  uint16_t keepr;
   uint16_t checksum = 0;
 };// __attribute__((packed));
 
@@ -43,6 +44,7 @@ struct SendPacket
   float r1;
   float r2;
   float dz;
+  uint16_t keeps;
   uint16_t checksum = 0;
 };// __attribute__((packed));
 
